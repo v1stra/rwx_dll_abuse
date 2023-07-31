@@ -3,10 +3,23 @@ import pefile
 import concurrent.futures
 import argparse
 
+
 def parse_pe_file(file_path):
     ''' Parses PE file from full path and returns a dict containing permissions and size '''
     try:
         pe = pefile.PE(file_path)
+
+        arch = 'Unknown'
+        
+        if pe.FILE_HEADER.Machine == pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_I386']:
+            arch = 'x86'
+        
+        if pe.FILE_HEADER.Machine ==  pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_IA64']:
+            arch = 'IA64'
+        
+        if pe.FILE_HEADER.Machine ==  pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_AMD64']:
+            arch = 'x64'
+
 
         sections = {}
 
@@ -23,25 +36,27 @@ def parse_pe_file(file_path):
 
             sections[section.Name.decode().rstrip("\x00")] = section_info
 
-        return file_path, sections
+        return file_path, sections, arch
 
     except Exception as e:
         # print(f"An error occurred with file {file_path}: {str(e)}")
-        return file_path, {}
+        return file_path, {}, ''
 
 def scan_directory_for_dlls(dir_path):
     ''' Recursively scans a directory and uses multi-processing to quickly find all DLLs with RWX sections '''
+    
     dll_files = []
-    for foldername, subfolders, filenames in os.walk(dir_path):
+    for foldername, _, filenames in os.walk(dir_path):
         for filename in filenames:
             if filename.endswith('.dll'):
                 dll_files.append(os.path.join(foldername, filename))
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        for dll_path, sections in executor.map(parse_pe_file, dll_files):
+        for dll_path, sections, architecture in executor.map(parse_pe_file, dll_files):
             for section, section_info in sections.items():
                 if section_info['permissions'] == 'RWX':
-                    print(f'DLL: {dll_path}, Section: {section}, Permissions: {section_info["permissions"]}, Size: {section_info["size"]}')
+                    print(f'DLL: {dll_path}, Section: {section}, Permissions: {section_info["permissions"]}, Size: {section_info["size"]}, Arch: {architecture}')
+                    
 
 if __name__ == '__main__':
 
