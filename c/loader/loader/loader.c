@@ -7,6 +7,14 @@ EXTERN_C PVOID sjump(IN PVOID shellcode_address);
 
 // C:\Users\user\AppData\Local\AzureFunctionsTools\Releases\2.60.0\cli_x64\System.Private.CoreLib.dll  [.xdata]
 
+
+void hook_iat(HMODULE hMod) {
+
+    LPVOID imageBase = GetModuleHandleA(NULL);
+
+
+}
+
 int main(int argc, char ** argv) {
 
     HMODULE hmod = LoadLibraryA("System.Private.CoreLib.dll");
@@ -49,7 +57,7 @@ int main(int argc, char ** argv) {
 
             // Jump to the section
             // ((void (*)(void))sectionBase)();
-            sjump(sectionBase);
+            // sjump(sectionBase);
         }
     }
 
